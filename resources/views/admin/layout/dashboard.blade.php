@@ -27,6 +27,7 @@
     <link href="{{ asset('asset/admin/vendor/quill/quill.bubble.css') }}" rel="stylesheet">
     <link href="{{ asset('asset/admin/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
     <link href="{{ asset('asset/admin/vendor/simple-datatables/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('asset/admin/datatable_folder/jquery.dataTables.min.css') }}" rel="stylesheet">
 
     <!-- Template Main CSS File -->
     <link href="{{ asset('asset/admin/css/style.css') }}" rel="stylesheet">
@@ -53,12 +54,8 @@
     <!-- Vendor JS Files -->
     <script src="{{ asset('asset/admin/vendor/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('asset/admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('asset/admin/vendor/chart.js/chart.umd.js') }}"></script>
-    <script src="{{ asset('asset/admin/vendor/echarts/echarts.min.js') }}"></script>
-    <script src="{{ asset('asset/admin/vendor/quill/quill.min.js') }}"></script>
-    <script src="{{ asset('asset/admin/vendor/simple-datatables/simple-datatables.js') }}"></script>
-    <script src="{{ asset('asset/admin/vendor/tinymce/tinymce.min.js') }}"></script>
-    <script src="{{ asset('asset/admin/vendor/php-email-form/validate.js') }}"></script>
+    <script src="{{ asset('asset/admin/datatable_folder/jquery-3.5.1.js') }}"></script>
+    <script src="{{ asset('asset/admin/datatable_folder/jquery.dataTables.min.js') }}"></script>
 
     <!-- Template Main JS File -->
     <script src="{{ asset('asset/admin/js/main.js') }}"></script>

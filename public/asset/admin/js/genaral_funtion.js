@@ -14,6 +14,7 @@ export class genaral_funtion {
                     </tr>`
         });
         $('#table').html(html);
+        $('.datatable').DataTable();
     }
     static error_clear = (data) => {
         $('.error').remove();
