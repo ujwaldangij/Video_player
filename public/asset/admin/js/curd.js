@@ -1,7 +1,5 @@
 import {
-    table,
-    error_handler,
-    error_clear
+    genaral_funtion
 } from "./genaral_funtion.js";
 class curd {
     read = () => {
@@ -13,7 +11,7 @@ class curd {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (response) {
-                table(response);
+                genaral_funtion.table(response);
             },
             error: function (response) {
                 alert(response.responseJSON);
@@ -21,6 +19,7 @@ class curd {
         });
     }
     create = () => {
+        $(document).ready(function () {
             $(document).on('click', '#upload', function (e) {
                 e.preventDefault();
                 var formData1 = new FormData(post_add_form);
@@ -36,7 +35,7 @@ class curd {
                     },
                     success: function (response) {
                         if (response) {
-                            error_clear();
+                            genaral_funtion.error_clear();
                             $('#post_add_form')[0].reset();
                             $('#add_record').modal('hide');
                             var obj = new curd();
@@ -45,13 +44,14 @@ class curd {
                     },
                     error: function (response) {
                         if (response.status === 500) {
-                            error_handler(response);
+                            genaral_funtion.error_handler(response);
                         } else {
                             alert(response.responseJSON);
                         }
                     },
                 });
             });
+        });
     }
 }
 var obj = new curd();
