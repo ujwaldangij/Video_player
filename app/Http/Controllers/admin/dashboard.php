@@ -84,31 +84,35 @@ class dashboard extends Controller
     }
     public function get_dashboard()
     {
+        return view('admin.pages.dashboard');
+    }
+    public function load_get_dashboard_table()
+    {
         $role = Auth::user()->role;
 
         if ($role == 3) {
-            $data = DB::table('videos')->orderBy('updated_at','desc')->get();
+            $data = DB::table('videos')->orderBy('updated_at', 'desc')->get();
             if (count($data) < 1) {
                 $data = "No record found";
-                return view("admin.pages.dashboard",['no_record' => $data]);
+                return response()->json($data, 500);
             }
-            return view("admin.pages.dashboard",['data_found' => $data]);
+            return response()->json($data, 200);
         }
         if ($role == 2) {
-            $data = DB::table('videos')->whereIn('role',[1,2])->orderBy('updated_at','desc')->get();
+            $data = DB::table('videos')->whereIn('role', [1, 2])->orderBy('updated_at', 'desc')->get();
             if (count($data) < 1) {
                 $data = "No record found";
-                return view("admin.pages.dashboard",['no_record' => $data]);
+                return response()->json($data, 500);
             }
-            return view("admin.pages.dashboard",['data_found' => $data]);
+            return response()->json($data, 200);
         }
         if ($role == 1) {
-            $data = DB::table('videos')->whereIn('role',[1])->orderBy('updated_at','desc')->get();
+            $data = DB::table('videos')->whereIn('role', [1])->orderBy('updated_at', 'desc')->get();
             if (count($data) < 1) {
                 $data = "No record found";
-                return view("admin.pages.dashboard",['no_record' => $data]);
+                return response()->json($data, 500);
             }
-            return view("admin.pages.dashboard",['data_found' => $data]);
+            return response()->json($data, 200);
         }
     }
     public function get_destroy_login()
