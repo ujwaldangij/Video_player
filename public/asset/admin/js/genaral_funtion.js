@@ -7,14 +7,15 @@ export class genaral_funtion {
                         <td>${valueOfElement.title}</td>
                         <td>${valueOfElement.description}</td>
                         <td>${valueOfElement.url}</td>
+                        <td hidden>${valueOfElement.file}</td>
                         <td>
-                        <button type='button' class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#edit_modal'>Edit</button>
+                        <button type='button' class='btn btn-warning edit_click' id='edit_click' data-bs-toggle='modal' data-bs-target='#edit_modal'>Edit</button>
                         <button type='button' class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#exampleModal'>Delete</button>
                         </td>
                     </tr>`
         });
         $('#table').html(html);
-        $('.datatable').DataTable();
+        var table = $('.datatable').DataTable();
     }
     static error_clear = (data) => {
         $('.error').remove();
@@ -31,5 +32,8 @@ export class genaral_funtion {
         $('#post_add_form')[0].reset();
         $('#add_record').modal('hide');
         this.table(data);
+    }
+    static edit =(data) =>{
+        
     }
 }

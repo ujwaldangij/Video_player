@@ -137,12 +137,12 @@ class dashboard extends Controller
 
         try {
             $name = now()->timestamp.$request->file->getClientOriginalName();
-            $filepath = $request->file('file')->storeAs("uploads/".Auth::user()->id,$name,"public");
+            $filepath = $request->file('file')->move(public_path("uploads"),str_replace(" ","",trim($name)));
             $insert = new Video();
             $insert->title = $request->title;
             $insert->description = $request->description;
             $insert->url = $request->url;
-            $insert->file = $filepath;
+            $insert->file = $name;
             $insert->ip = $request->ip();
             $insert->user_id = Auth::user()->id;
             $insert->role = Auth::user()->role;
