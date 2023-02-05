@@ -25,6 +25,8 @@ Admin Emart
                             <th scope="col">Tiitle</th>
                             <th scope="col">Description</th>
                             <th scope="col">Url</th>
+                            <th scope="col">View</th>
+                            <th scope="col">Download</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -35,17 +37,20 @@ Admin Emart
                             <th scope="row"><a href="#">{{ $val->id }}</a></th>
                             <td>{{ $val->title }}</td>
                             <td>{{ $val->description }}</td>
-                            <td><a href="#" class="text-primary">{{ $val->url }}</a></td>
+                            <td><a href="{{ route('event', $val->url) }}" target="_Blank" class="text-primary">{{ $val->url }}</a></td>
+                            <td>{{ $val->view }}</td>
+                            <td>{{ $val->download }}</td>
                             <td>
 
                                 <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                     data-bs-target="#edit_modal">
-                                    <a href="{{ route('edit', $val->id) }}" class="text-white">Edit</a>
+                                    <a href="{{ route('edit', $val->id) }}" class="text-white"><i class="bi bi-pencil-square"></i></a>
                                 </button>
                                
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#exampleModal">
-                                    Delete
+                                     <a href="{{ route('delete', $val->id) }}" class="text-white"><i class="bi bi-archive"></i></a>
+                                    
                                 </button>
                             </td>
                         </tr>

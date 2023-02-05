@@ -13,6 +13,7 @@ Admin Edit Url
                         @csrf
                         <div class="mb-4">
                             <label for="Title" class="form-label">Title</label>
+                            <input type="hidden" class="form-control" id="id_edit" name="id_edit" value="{{ $val[0]->id }}">
                             <input type="text" class="form-control" id="title_edit" name="title_edit" value="{{ $val[0]->title }}">
                             @error('title_edit')
                             <div class="error text-danger fw-bold">{{ $message }}</div>
@@ -34,20 +35,14 @@ Admin Edit Url
                         </div>
                         <div class="mb-4">
                             <label for="formFile" class="form-label">Old Video Upload</label>
-                            <input class="form-control" type="hidden" id="old_file" name="file"  value="{{ $val[0]->file }}">
-                            <video width="320" height="240" controls>
-                                <source src="movie.mp4" type="video/mp4">
-                                <source src="movie.ogg" type="video/ogg">
-                                Your browser does not support the video tag.
-                              </video>
-                            <video src="{{ storage_path("app/public/".$val[0]->file) }}"></video>
-                            @error('file')              
-                            <div class="error text-danger fw-bold">{{ $message }}</div>
-                            @enderror
+                            <input class="form-control" type="hidden" id="old_file" name="old_file"  value="{{ $val[0]->file }}">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="{{ asset('uploads/'.$val[0]->file) }}" title="YouTube video" allowfullscreen></iframe>
+                            </div>
                         </div>
                         <div class="mb-4">
                             <label for="formFile" class="form-label">New Video Upload</label>
-                            <input class="form-control" type="file" id="file" name="file"  value="{{ $val[0]->file }}">
+                            <input class="form-control" type="file" id="file" name="data">
                             @error('file')          
                             <div class="error text-danger fw-bold">{{ $message }}</div>
                             @enderror
