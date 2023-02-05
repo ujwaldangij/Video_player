@@ -152,6 +152,7 @@ class dashboard extends Controller
     {
         $data = DB::table('videos')->where('id',$id)->get();
         return view('admin.pages.edit',['val' => $data]);
+        // 1
     }
     public function post_edit_record(Request $request)
     {
