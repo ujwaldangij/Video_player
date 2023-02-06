@@ -22,6 +22,6 @@ require __DIR__.'/admin/web.php';
 
 Route::fallback(function ()
 {
-    return view('admin.pages.pages_error_404');
+    abort(404);
 });
 

@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('download', function (Blueprint $table) {
             $table->id();
-            // $table->name('ip');
-            // $table->name('download');
-            // $table->name('view');
+            $table->string('ip');
+            $table->string('download');
+            $table->string('view');
+            $table->string('url');
             $table->timestamps();
         });
     }

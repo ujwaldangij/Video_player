@@ -156,12 +156,20 @@ class dashboard extends Controller
     }
     public function post_edit_record(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "title_edit" => ["required"],
-            "description_edit" => ["required"],
-            "url_edit" => ["required"],
-        ]);
-
+        $data = DB::table('videos')->where('url',$request->url_edit)->where('id',$request->id_edit)->get();
+        if(count($data) < 1){
+            $validator = Validator::make($request->all(), [
+                "title_edit" => ["required"],
+                "description_edit" => ["required"],
+                "url_edit" => ["required","unique:videos,url"],
+            ]);
+        }else {
+            $validator = Validator::make($request->all(), [
+                "title_edit" => ["required"],
+                "description_edit" => ["required"],
+                "url_edit" => ["required"],
+            ]);
+        }
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -203,6 +211,12 @@ class dashboard extends Controller
                 'view' => $data[0]->view + 1,
             ]);
             $king = DB::table('videos')->where('url', $id)->get();
+            DB::table('download')->insert([
+                'ip' => $request->ip(),
+                'download' => $data[0]->download,
+                'view' => $king[0]->view,
+                'url' => $id,
+            ]);
             return view('event',['data' => $data,'count' => $data[0]->download,'view' => $king[0]->view]);
         }
         else{

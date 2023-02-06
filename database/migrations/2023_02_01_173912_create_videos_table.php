@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
-            $table->string('url');
+            $table->string('url')->unique();
             $table->string('file');
             $table->string('ip');
             $table->string('user_id');
