@@ -84,6 +84,7 @@ Admin Emart
                             <input type="text" class="form-control" id="description" name="description">
                             <div id="error_description" class="form-text text-danger"></div>
                         </div>
+                        <div class="king1 text-center"><img src="{{ asset('asset/admin/img/Upload.gif') }}" alt="loading"></div>
                         <div class="mb-4">
                             <label for="url" class="form-label">Url</label>
                             <input type="text" class="form-control" id="url" name="url">

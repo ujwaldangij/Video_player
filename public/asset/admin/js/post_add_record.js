@@ -5,6 +5,7 @@ var empty_error_div = () => {
     $('#error_file').html('');
 }
 $(document).ready(function () {
+    $('.king1').hide();
     $(document).on('click', '#upload', function (e) {
         e.preventDefault();
         var formData1 = new FormData(post_add_form);
@@ -20,6 +21,10 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             dataType: 'json',
+            beforeSend: function() {
+                // setting a timeout
+                $('.king1').fadeIn();
+            },
             success: function (response) {
                 if (response) {
                     empty_error_div();
@@ -46,7 +51,10 @@ $(document).ready(function () {
                 } else {
                     alert(response.responseJSON);
                 }
-            }
+            },
+            complete: function() {
+                $('.king1').fadeOut();
+            },
         });
     });
 });
