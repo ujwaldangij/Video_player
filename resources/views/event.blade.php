@@ -25,7 +25,8 @@
                     <div class="text text-capitalize">
                         <p>{{ $data[0]->description }}</p>
                     </div>
-                    <button class="btn btn-danger d" href="{{ asset('uploads/'.$data[0]->file) }}">Click Here To download</button>
+                    <a href="/download?key={{ $data[0]->file }}" class="btn btn-danger d" download>Click Here To Download</a>
+                    {{-- <button class="btn btn-danger d" href="{{ asset('uploads/'.$data[0]->file) }}">Click Here To download</button> --}}
                 </div>
                 <div class="col-md-6 ">
                     <video class="w-100" controls controlsList="nodownload">
@@ -42,9 +43,8 @@
     <script src="{{ asset('asset/admin/js/jquery-3.5.1.min.js') }}"></script>
     <script>
         $(document).on('click', '.d', function (e) {
-            e.preventDefault();
-            var data = '{{ $data[0]->file  }}';
-            window.open("/download?key="+data, "_blank");
+            // e.preventDefault();
+            // window.open("/download?key="+data, "_blank");
             location.reload();
           });
     </script>
