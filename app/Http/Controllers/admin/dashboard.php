@@ -231,19 +231,8 @@ class dashboard extends Controller
                 'download' => $data[0]->download + 1,
             ]);
             if($up){
-                // $data = DB::table('videos')->where('file',$request->key)->get();
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename='.public_path("uploads\\").$request->key);
-                header('Content-Transfer-Encoding: binary');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize(public_path("uploads\\").$request->key));
-                ob_clean();
-                flush();
-                readfile(public_path("uploads\\").$request->key);
-                exit;
+                $pathToFile = public_path("uploads\\").$request->key;
+                return response()->download($pathToFile);
             }
         }
     }
