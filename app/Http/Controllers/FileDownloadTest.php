@@ -1,57 +1,45 @@
-<?php
+To check if a file named `rename.zip` is present in a folder and then unzip that file into the same folder in PHP Laravel, you can use the following code:
 
-namespace Tests\Browser;
-
-use Exception;
-use Tests\DuskTestCase;
-use Laravel\Dusk\Browser;
+```php
+use ZipArchive;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
 
-class FileDownloadTest extends DuskTestCase
+public function unzipRenameZipIfPresent()
 {
-    public function testDownloadFile()
-    {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('https://www.mcxindia.com/technology/ctcl/ctcl-downloads');
-            $browser->maximize();
-            $browser->click('#form1 > div.wrapper > div.main-content > div > div > div.col-lg-7.col-md-9.col-sm-8.borderR > div:nth-child(2) > div > div:nth-child(4) > table > tbody > tr:nth-child(2) > td:nth-child(3) > a');
-            $browser->pause(3000);
-        });
-        $this->store('C:\Users\Niraj Dangi\Downloads', 'C:\Users\Niraj Dangi\OneDrive\Desktop\demo1');
-    }
-    public function store($path, $destinationDirectory)
-    {
-        $directory = $path; // Replace with the actual path to your download folder
-        $latestFile = null;
-        $latestTime = 0;
+    // Define the folder containing the zip files
+    $folderPath = storage_path('app/your_folder_name'); // Update 'your_folder_name' with your actual folder name
 
-        // Open the directory
-        if ($handle = opendir($directory)) {
-            while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != "..") {
-                    $filePath = $directory . '/' . $file;
-                    $fileTime = filemtime($filePath); // Get the modification timestamp
+    // Define the name of the zip file to check for
+    $zipFileName = 'rename.zip';
 
-                    if ($fileTime > $latestTime) {
-                        $latestTime = $fileTime;
-                        $latestFile = $file;
-                    }
-                }
-            }
-            closedir($handle);
+    // Check if the zip file exists in the folder
+    $zipFilePath = $folderPath . '/' . $zipFileName;
 
-            if ($latestFile) {
-                $s1 = pathinfo($latestFile, PATHINFO_EXTENSION);
-                if ($s1 == 'zip') {
-                    $m = File::move($path . '\\' . $latestFile, $destinationDirectory . '\\' . $latestFile);
-                    if ($m) {
-                        echo "file uploaded";
-                    }
-                }
-            } else {
-                echo "No files found in the download folder.";
-            }
+    if (Storage::exists($zipFilePath)) {
+        // Create a ZipArchive instance
+        $zip = new ZipArchive;
+
+        // Open the zip file
+        if ($zip->open(storage_path('app/' . $zipFilePath)) === true) {
+            // Define the extraction directory (same folder)
+            $extractPath = $folderPath;
+
+            // Extract the contents to the extraction directory
+            $zip->extractTo($extractPath);
+            $zip->close();
+
+            // Optionally, you can perform any additional processing here
+
+            return "File '$zipFileName' extracted successfully!";
+        } else {
+            return "Failed to open the zip file '$zipFileName'.";
         }
+    } else {
+        return "File '$zipFileName' not found in the folder.";
     }
 }
+```
+
+Replace `'your_folder_name'` with the actual name of the folder where your `rename.zip` file is expected to be located.
+
+This code checks if `rename.zip` exists in the specified folder, and if it does, it extracts the contents into the same folder. It then provides appropriate feedback based on whether the file is found and successfully extracted.
