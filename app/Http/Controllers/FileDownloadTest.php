@@ -1,43 +1,41 @@
-To check if the `rename.zip` file is present in an external directory, unzip it, and put it in the same folder in PHP Laravel, you can use the following code:
+I'm sorry to hear that the previous approach didn't work for you. Download handling in browser automation tests like Laravel Dusk can be complex, and it may require some adjustments based on your specific application and environment.
+
+Here's another alternative approach to wait for a file to be downloaded in Laravel Dusk:
 
 ```php
-use ZipArchive;
-use Illuminate\Support\Facades\Storage;
+// Click the link or button to initiate the file download
+$browser->click('#download-button');
 
-public function unzipRenameZipFromExternalDirectory()
-{
-    // Define the external directory path
-    $externalFolderPath = '/path/to/external/directory'; // Replace with the actual external directory path
+// Wait for the download to start (you can use a sleep or pause here)
+$browser->pause(5000); // Adjust the time as needed
 
-    // Define the name of the zip file to check for
-    $zipFileName = 'rename.zip';
+// Define the path where you expect the file to be downloaded
+$downloadPath = storage_path('app/downloads/your_file_name.ext'); // Adjust the path and filename
 
-    // Check if the zip file exists in the external directory
-    $zipFilePath = $externalFolderPath . '/' . $zipFileName;
+// Use a loop to check if the file exists, with a timeout
+$timeout = 60; // Set a timeout (in seconds) for the download
+$startTime = time();
 
-    if (file_exists($zipFilePath)) {
-        // Create a ZipArchive instance
-        $zip = new ZipArchive;
-
-        // Open the zip file
-        if ($zip->open($zipFilePath) === true) {
-            // Define the folder where you want to extract the contents (same folder as the zip file)
-            $extractPath = $externalFolderPath;
-
-            // Extract the contents to the extraction directory
-            $zip->extractTo($extractPath);
-            $zip->close();
-
-            // Optionally, you can perform any additional processing here
-
-            return "File '$zipFileName' extracted successfully!";
-        } else {
-            return "Failed to open the zip file '$zipFileName'.";
-        }
-    } else {
-        return "File '$zipFileName' not found in the external directory.";
-    }
+while (!file_exists($downloadPath) && (time() - $startTime) < $timeout) {
+    // Wait for a moment and then check again
+    sleep(2); // Adjust the sleep time as needed
 }
+
+// After the file exists or the timeout is reached, you can proceed with further assertions or actions
 ```
 
-Replace `/path/to/external/directory` with the actual path to the external directory where the `rename.zip` file is located. This code will check if the zip file exists in the external directory, and if it does, it will extract the contents into the same external directory and provide appropriate feedback based on whether the file is found and successfully extracted.
+In this revised approach:
+
+1. Click the link or button to initiate the file download.
+
+2. Pause for a few seconds to allow the download to start. Adjust the pause time as needed.
+
+3. Define the path where you expect the file to be downloaded.
+
+4. Use a loop to continuously check if the file exists in the specified directory. The loop will run until the file is found or a timeout is reached.
+
+5. Set a timeout value to prevent the script from waiting indefinitely. Adjust the timeout value and the sleep time within the loop as necessary for your specific download duration.
+
+After the loop, you can proceed with further assertions or actions in your Laravel Dusk test.
+
+Please make sure that the `downloadPath` variable is set correctly to match the expected location of the downloaded file in your Laravel application.
