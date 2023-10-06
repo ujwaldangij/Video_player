@@ -1,41 +1,40 @@
-To capture an element in Laravel Dusk with better quality and a specific size, you can use the `screenshot` method along with some additional steps to control the quality and size of the captured image.
+In Laravel Dusk, you can capture high-quality images of specific elements on a webpage using the `screenshot` method provided by Dusk. To capture an image of a specific element with high quality, you can follow these steps:
 
-Here's how to capture an element with custom quality and size in Laravel Dusk:
+1. Install Laravel Dusk (if you haven't already) by running `composer require laravel/dusk`.
+
+2. Configure Dusk by running `php artisan dusk:install`.
+
+3. Open your Dusk test file, typically located in the `tests/Dusk` directory.
+
+4. Use the `screenshot` method to capture an image of the desired element with the `element` method to specify the element you want to capture. You can also specify the desired file format and quality.
+
+Here's an example of how you can capture a high-quality image of an element:
 
 ```php
-$this->browse(function (Browser $browser) {
-    // Visit the web page where the element is located
-    $browser->visit('https://example.com'); // Replace with your URL
+<?php
 
-    // Find the element you want to capture
-    $element = $browser->element('#your-element-selector'); // Replace with the actual selector of the element
+namespace Tests\Browser;
 
-    // Get the position and size of the element
-    $elementLocation = $element->getLocation();
-    $elementSize = $element->getSize();
+use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
 
-    // Set the window size to match the element's size
-    $browser->driver->manage()->window()->setSize($elementSize['width'], $elementSize['height']);
-
-    // Scroll to the element to ensure it's in view
-    $browser->driver->executeScript("window.scrollTo(0, {$elementLocation['y']});");
-
-    // Wait for any animations or dynamic content to load (if needed)
-    $browser->pause(1000);
-
-    // Capture the screenshot of the element with custom quality
-    $browser->driver->takeElementScreenshot($element->getWebDriverIdentifier(), 'path_to_save_screenshot', ['quality' => 100]);
-});
+class ExampleTest extends DuskTestCase
+{
+    public function testCaptureElementImage()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/your-page-url')
+                ->element('#element-selector') // Replace with the CSS selector of your element
+                ->screenshot('path/to/save/screenshot.png', ['fullPage' => true, 'quality' => 90]); // Specify the path and image quality
+        });
+    }
+}
 ```
 
-In this code:
+In this example:
 
-- We visit the web page containing the element you want to capture.
-- We find the element using a CSS selector (replace `#your-element-selector` with the actual selector of the element).
-- We get the position and size of the element using the `getLocation` and `getSize` methods.
-- We set the window size to match the element's size to capture only the element itself.
-- We scroll to the element to ensure it's in view (adjust the scroll behavior as needed).
-- We wait for any animations or dynamic content to load if there's a delay.
-- Finally, we use the `takeElementScreenshot` method to capture the element with custom quality and save it to the specified path (replace `'path_to_save_screenshot'` with the actual file path).
+- Replace `/your-page-url` with the URL of the webpage you want to visit.
+- Replace `#element-selector` with the CSS selector of the element you want to capture.
+- Adjust the `quality` option to control the image quality (90 is just an example).
 
-This approach allows you to capture a specific element with better control over its quality and size in Laravel Dusk.
+Make sure to replace the placeholders with your actual webpage URL and element selector. After running this Dusk test, it will capture a high-quality screenshot of the specified element and save it to the specified path with the given quality settings.
