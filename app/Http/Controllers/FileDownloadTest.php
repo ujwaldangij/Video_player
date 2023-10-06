@@ -1,26 +1,19 @@
-In Laravel Dusk, if you want to stop a loop when the URL changes, you can achieve this by using a loop control structure (such as a `while` or `for` loop) and periodically checking the current URL within the loop. When the URL changes as expected, you can use a `break` statement to exit the loop. Here's an example using a `while` loop:
+You can use PHP and Laravel to check if a file named "readme.zip" is present in a specific folder and delete it if it exists. Here's a basic example:
 
 ```php
-$this->browse(function ($browser) {
-    $desiredUrl = 'https://example.com/target-page';
+use Illuminate\Support\Facades\File;
 
-    while (true) {
-        $currentUrl = $browser->visit($desiredUrl)->url();
+$downloadFolderPath = '/path/to/your/download/folder';
+$filenameToDelete = 'readme.zip';
 
-        if ($currentUrl === $desiredUrl) {
-            // URL hasn't changed yet, continue looping
-            sleep(1); // Optional: Add a sleep to avoid continuous checking
-        } else {
-            // URL has changed, break out of the loop
-            break;
-        }
-    }
-
-    // You can continue with further test steps after the URL change
-    $browser->assertSee('New Page Content');
-});
+// Check if the file exists in the folder
+if (File::exists($downloadFolderPath . '/' . $filenameToDelete)) {
+    // If it exists, delete it
+    File::delete($downloadFolderPath . '/' . $filenameToDelete);
+    echo $filenameToDelete . ' has been deleted.';
+} else {
+    echo $filenameToDelete . ' does not exist in the download folder.';
+}
 ```
 
-In this example, the `while` loop continues to visit the desired URL and checks the current URL. If the current URL matches the desired URL, it means the URL hasn't changed yet, so the loop continues. When the URL changes (indicating the desired page has loaded), the loop is exited using the `break` statement.
-
-Please note that you should add some form of delay (`sleep` in this example) to avoid continuously checking the URL and causing excessive load on your server. Adjust the sleep duration as needed based on your specific use case and server response times.
+Replace `'/path/to/your/download/folder'` with the actual path to your download folder. This code checks if "readme.zip" exists in the specified folder and deletes it if found.
