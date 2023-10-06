@@ -1,52 +1,26 @@
-Laravel Dusk test cases are designed to be deterministic and not suitable for indefinite loops like a `while` loop to keep attempting a login until it succeeds. Running tests with indefinite loops can lead to various issues and isn't the intended use of Dusk.
-
-However, you can create a loop within a Dusk test to retry a login for a specified number of times or until a certain condition is met. Here's an example:
+In Laravel Dusk, if you want to stop a loop when the URL changes, you can achieve this by using a loop control structure (such as a `while` or `for` loop) and periodically checking the current URL within the loop. When the URL changes as expected, you can use a `break` statement to exit the loop. Here's an example using a `while` loop:
 
 ```php
-<?php
+$this->browse(function ($browser) {
+    $desiredUrl = 'https://example.com/target-page';
 
-namespace Tests\Browser;
+    while (true) {
+        $currentUrl = $browser->visit($desiredUrl)->url();
 
-use Laravel\Dusk\Browser;
-use Tests\DuskTestCase;
-
-class LoginTest extends DuskTestCase
-{
-    public function testLogin()
-    {
-        $maxAttempts = 3; // Maximum number of login attempts
-        
-        $this->browse(function (Browser $browser) use ($maxAttempts) {
-            $attempts = 0;
-
-            while ($attempts < $maxAttempts) {
-                $browser->visit('/login')
-                    ->type('email', 'your@email.com')
-                    ->type('password', 'yourpassword')
-                    ->press('Login');
-
-                if ($browser->assertSee('Welcome, User!')) {
-                    // Login was successful, break out of the loop
-                    break;
-                }
-
-                // Increment the attempts count and wait before retrying (if needed)
-                $attempts++;
-                if ($attempts < $maxAttempts) {
-                    $browser->pause(1000); // Wait for 1 second before retrying
-                }
-            }
-
-            // You can continue with other actions or assertions here
-            $browser->clickLink('Dashboard')
-                ->assertSee('Dashboard'); // Example navigation to the dashboard
-        });
+        if ($currentUrl === $desiredUrl) {
+            // URL hasn't changed yet, continue looping
+            sleep(1); // Optional: Add a sleep to avoid continuous checking
+        } else {
+            // URL has changed, break out of the loop
+            break;
+        }
     }
-}
+
+    // You can continue with further test steps after the URL change
+    $browser->assertSee('New Page Content');
+});
 ```
 
-In this example, we use a `while` loop to attempt the login up to a maximum of three times (`$maxAttempts`). If a successful login is detected, the loop is exited with `break`. We also introduce a brief pause between login attempts to avoid excessive requests.
+In this example, the `while` loop continues to visit the desired URL and checks the current URL. If the current URL matches the desired URL, it means the URL hasn't changed yet, so the loop continues. When the URL changes (indicating the desired page has loaded), the loop is exited using the `break` statement.
 
-While this approach allows for retrying a login, it's essential to set a reasonable maximum number of attempts (`$maxAttempts`) to prevent infinite loops and to handle login failures gracefully in your test code.
-
-Note: Dusk tests are primarily meant for testing specific functionalities, and the use of indefinite loops should be avoided whenever possible to ensure the reliability and determinism of your tests.
+Please note that you should add some form of delay (`sleep` in this example) to avoid continuously checking the URL and causing excessive load on your server. Adjust the sleep duration as needed based on your specific use case and server response times.
