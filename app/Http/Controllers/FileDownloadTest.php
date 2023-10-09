@@ -1,51 +1,50 @@
-To ensure that Laravel Dusk runs in incognito mode and doesn't prompt to save files every time, you need to configure your ChromeOptions when setting up your DuskTestCase.php. Specifically, you can use the `--no-sandbox` flag and specify a custom download directory to avoid the prompts for file downloads. Here's how you can do it:
+If the file is downloading but you are still encountering a "blocked dangerous" warning, it's likely that the browser is flagging the download as potentially unsafe due to its source or type. Here are some steps you can take to address this issue in Laravel Dusk:
 
-In your `DuskTestCase.php` file, configure the Chrome options like this:
+1. **Check the Source of the File:**
+   Verify that the XML file you are trying to download does not come from an untrusted or non-standard source. Some browsers may flag downloads from certain domains or sources as potentially dangerous. Make sure the file is coming from a secure and trusted source.
 
-```php
-use Laravel\Dusk\TestCase as BaseTestCase;
-use Facebook\WebDriver\Chrome\ChromeOptions;
+2. **File Type Considerations:**
+   If the XML file contains potentially harmful content, browsers might block it. Ensure that the XML file itself is safe and does not contain any malicious code or scripts. Additionally, make sure the file has a standard XML file extension (e.g., ".xml").
 
-class DuskTestCase extends BaseTestCase
-{
-    use CreatesApplication;
+3. **Headers and MIME Types:**
+   Verify that the server is sending the correct headers and MIME type for the XML file. Ensure that the server is properly configured to send the file as "application/xml" or "text/xml" and not something that might trigger a security warning.
 
-    protected function driver()
-    {
-        $options = (new ChromeOptions())->addArguments([
-            '--disable-gpu',
-            '--headless',
-            '--no-sandbox', // Add this flag
-            '--disable-extensions',
-            '--disable-dev-shm-usage',
-            '--disable-popup-blocking',
-            '--disable-infobars',
-            '--disable-notifications',
-            '--disable-software-rasterizer',
-            '--disable-web-security', // Add this flag to disable web security (incognito-like mode)
-            '--user-data-dir=' . storage_path('app/chrome'), // Use a custom user data directory to avoid prompts
-            '--disk-cache-dir=' . storage_path('app/chrome/cache'), // Use a custom cache directory
-        ]);
+4. **Content-Disposition Header:**
+   You can try setting the `Content-Disposition` header on the server side to suggest a filename for the download. This can sometimes help with browser warnings.
 
-        return RemoteWebDriver::create(
-            'http://localhost:9515',
-            DesiredCapabilities::chrome()->setCapability(
-                ChromeOptions::CAPABILITY,
-                $options
-            )
-        );
-    }
-}
-```
+   ```php
+   header('Content-Disposition: attachment; filename="downloaded.xml"');
+   ```
 
-In the code above:
+5. **Browser Options:**
+   In some cases, you might need to configure the browser driver used by Dusk to handle downloads without triggering warnings. For example, with the Chrome driver, you can specify the download directory and disable the prompt for downloads.
 
-- We add the `--no-sandbox` flag to Chrome options to disable the sandbox, which can sometimes cause issues in headless mode.
+   ```php
+   $options = [
+       '--download.default_directory' => storage_path('app/downloads'),
+       '--disable-popup-blocking' => 'true', // Disable popup blocking
+   ];
+   $browser = new Browser(new ChromeDriver($options));
+   ```
 
-- We use `--disable-web-security` to disable web security, which is akin to incognito mode and can prevent certain prompts.
+6. **Accepting the Download Prompt:**
+   If the browser is showing a download prompt or warning, you may need to use JavaScript to automatically accept the download prompt to bypass the warning.
 
-- We specify custom directories for user data and cache to avoid any permission issues and to ensure files are downloaded to a location you control.
+   ```php
+   $this->browse(function (Browser $browser) {
+       $browser->visit('/')
+               ->type('#input-field', 'Input Value')
+               ->click('#download-button') // Replace with the actual selector of the download trigger
+               ->driver->executeScript('
+                   var anchor = document.createElement("a");
+                   anchor.href = "/path-to-your-xml-file.xml"; // Replace with the actual file path
+                   anchor.download = "downloaded-file.xml"; // Specify the desired download filename
+                   anchor.style.display = "none";
+                   document.body.appendChild(anchor);
+                   anchor.click();
+                   document.body.removeChild(anchor);
+               ');
+   });
+   ```
 
-Please replace the paths (`storage_path('app/chrome')` and `storage_path('app/chrome/cache')`) with the actual paths you want to use for your user data and cache directories.
-
-With these configurations, Laravel Dusk should run in a more incognito-like mode, and you should be able to download files without being prompted to save them every time.
+Please make sure to adjust the above suggestions to your specific application and browser configuration. The goal is to ensure that the file download is considered safe and does not trigger "blocked dangerous" warnings in the browser.
