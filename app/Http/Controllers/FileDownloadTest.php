@@ -1,28 +1,58 @@
-I apologize for any inconvenience you're facing. If the `--disable-web-security` flag is not working as expected, it's possible that Chrome's security mechanisms are preventing the download for safety reasons.
+In Laravel Dusk, you can automate the process of handling a "Blocked Dangerous" prompt when downloading a file. Here's a basic outline of how you can do this:
 
-To bypass this issue, you can try using the `--safebrowsing-disable-download-protection` flag in addition to `--disable-web-security` when configuring ChromeOptions:
+1. **Ensure the Download Path is Set:**
+   Make sure you've set the download path for your Laravel Dusk tests. You can do this in your DuskTestCase.php file:
 
-```php
-protected function driver()
-{
-    $options = (new ChromeOptions())->addArguments([
-        '--disable-web-security',
-        '--safebrowsing-disable-download-protection', // Disable download protection (use with caution)
-        '--disable-popup-blocking',
-        '--no-sandbox',
-        '--disable-dev-shm-usage',
-        '--headless', // If you want headless mode
-        '--disable-gpu', // If you want headless mode
-    ]);
+   ```php
+   protected function driver()
+   {
+       $options = (new ChromeOptions)->addArguments([
+           '--disable-gpu',
+           '--headless',
+           '--window-size=1920,1080',
+           '--no-sandbox',
+           '--disable-dev-shm-usage',
+           '--disable-software-rasterizer',
+           '--disable-web-security',
+           '--disable-notifications',
+           '--disable-extensions',
+           '--safebrowsing-disable-download-protection',
+           '--disable-popup-blocking',
+       ])->setExperimentalOption('prefs', [
+           'download.default_directory' => '/path/to/download/directory',
+       ]);
 
-    return RemoteWebDriver::create(
-        'http://localhost:9515', DesiredCapabilities::chrome()->setCapability(
-            ChromeOptions::CAPABILITY, $options
-        )
-    );
-}
-```
+       return RemoteWebDriver::create(
+           'http://localhost:9515',
+           DesiredCapabilities::chrome()->setCapability(
+               ChromeOptions::CAPABILITY,
+               $options
+           )
+       );
+   }
+   ```
 
-Please use this option with caution, as it can disable download protection and may expose your testing environment to potential security risks.
+   Replace `/path/to/download/directory` with the actual path where you want the downloaded file to be saved.
 
-If this still doesn't work, it's possible that the website or server you are testing against has specific security measures in place that cannot be easily bypassed. In such cases, it's essential to ensure that your testing is conducted in a responsible and ethical manner, and you may need to reach out to the website's administrators or support for guidance on testing their system.
+2. **Handle the Prompt in Your Dusk Test:**
+   In your Dusk test, when the "Blocked Dangerous" prompt appears, you can use the `acceptDialog` method to accept the prompt and proceed with the download:
+
+   ```php
+   $browser->visit('/page/where/download/occurs')
+       ->click('.download-button') // Trigger the download
+       ->acceptDialog();
+   ```
+
+   This code assumes that the `.download-button` element triggers the download.
+
+3. **Verify the Download:**
+   After accepting the prompt, you can then verify that the file was downloaded to the specified directory using Laravel Dusk's file assertions:
+
+   ```php
+   $downloadedFilePath = '/path/to/download/directory/your-file.extension';
+   $browser->assertFileExists($downloadedFilePath);
+   ```
+
+   Replace `your-file.extension` with the actual filename and extension of the downloaded file.
+
+By following these steps, you can automate the handling of the "Blocked Dangerous" prompt and ensure that the file is downloaded correctly using Laravel Dusk.
