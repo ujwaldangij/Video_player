@@ -1,23 +1,28 @@
-To handle the "blocked dangerous" warning for downloading an XML file in Laravel Dusk, you can use JavaScript to simulate the interaction with the warning dialog. Here's an example of how you might do this:
+I apologize for any inconvenience you're facing. If the `--disable-web-security` flag is not working as expected, it's possible that Chrome's security mechanisms are preventing the download for safety reasons.
+
+To bypass this issue, you can try using the `--safebrowsing-disable-download-protection` flag in addition to `--disable-web-security` when configuring ChromeOptions:
 
 ```php
-$browser->visit('https://example.com')
-    ->click('#download-link') // Click the link/button to trigger the download
-    ->waitFor(function ($browser) {
-        // Check if the download warning dialog is present
-        return $browser->script("return confirm('This file may be dangerous. Do you want to keep it?');");
-    })
-    ->acceptDialog(); // Simulate clicking the "OK" or "Keep" button on the dialog
+protected function driver()
+{
+    $options = (new ChromeOptions())->addArguments([
+        '--disable-web-security',
+        '--safebrowsing-disable-download-protection', // Disable download protection (use with caution)
+        '--disable-popup-blocking',
+        '--no-sandbox',
+        '--disable-dev-shm-usage',
+        '--headless', // If you want headless mode
+        '--disable-gpu', // If you want headless mode
+    ]);
+
+    return RemoteWebDriver::create(
+        'http://localhost:9515', DesiredCapabilities::chrome()->setCapability(
+            ChromeOptions::CAPABILITY, $options
+        )
+    );
+}
 ```
 
-In this example:
+Please use this option with caution, as it can disable download protection and may expose your testing environment to potential security risks.
 
-1. `click('#download-link')` simulates clicking on the link/button that triggers the XML file download.
-
-2. `waitFor` waits for a certain condition to be true before proceeding. In this case, it checks if a JavaScript `confirm` dialog is present. Many browsers display this kind of dialog when they suspect a file might be dangerous.
-
-3. `acceptDialog` simulates clicking the "OK" or "Keep" button on the dialog, thereby acknowledging the warning and allowing the download to proceed.
-
-Please note that this code assumes that the browser displays a JavaScript `confirm` dialog when a potentially dangerous download is detected. The actual implementation might vary depending on the website and the browser's behavior.
-
-Additionally, ensure that you're using this code responsibly and ethically, as bypassing security warnings should only be done for legitimate testing purposes and not for malicious activities.
+If this still doesn't work, it's possible that the website or server you are testing against has specific security measures in place that cannot be easily bypassed. In such cases, it's essential to ensure that your testing is conducted in a responsible and ethical manner, and you may need to reach out to the website's administrators or support for guidance on testing their system.
