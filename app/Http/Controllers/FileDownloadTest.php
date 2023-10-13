@@ -1,58 +1,26 @@
-In Laravel Dusk, you can automate the process of handling a "Blocked Dangerous" prompt when downloading a file. Here's a basic outline of how you can do this:
+In Laravel Dusk, when you use `assertSeeText` to verify the presence of a specific text on the page and then attempt to click a link or perform an action based on that text, you should handle situations where the text is not present to prevent errors. You can use conditional logic to check if the text is visible before clicking the link. Here's an example:
 
-1. **Ensure the Download Path is Set:**
-   Make sure you've set the download path for your Laravel Dusk tests. You can do this in your DuskTestCase.php file:
+```php
+$browser->visit('/some-page')
+    ->when(
+        $browser->assertSeeText('Text You Expect')->missing(),
+        function ($browser) {
+            // Handle the case when the text is not present
+            $browser->pause(1000); // Wait or perform other actions as needed
+        },
+        function ($browser) {
+            // Perform actions when the text is present, like clicking a link
+            $browser->clickLink('Your Link Text');
+        }
+    );
+```
 
-   ```php
-   protected function driver()
-   {
-       $options = (new ChromeOptions)->addArguments([
-           '--disable-gpu',
-           '--headless',
-           '--window-size=1920,1080',
-           '--no-sandbox',
-           '--disable-dev-shm-usage',
-           '--disable-software-rasterizer',
-           '--disable-web-security',
-           '--disable-notifications',
-           '--disable-extensions',
-           '--safebrowsing-disable-download-protection',
-           '--disable-popup-blocking',
-       ])->setExperimentalOption('prefs', [
-           'download.default_directory' => '/path/to/download/directory',
-       ]);
+In this example:
 
-       return RemoteWebDriver::create(
-           'http://localhost:9515',
-           DesiredCapabilities::chrome()->setCapability(
-               ChromeOptions::CAPABILITY,
-               $options
-           )
-       );
-   }
-   ```
+1. We start by visiting a page with `$browser->visit('/some-page')`.
 
-   Replace `/path/to/download/directory` with the actual path where you want the downloaded file to be saved.
+2. We use `assertSeeText` to check if "Text You Expect" is present on the page.
 
-2. **Handle the Prompt in Your Dusk Test:**
-   In your Dusk test, when the "Blocked Dangerous" prompt appears, you can use the `acceptDialog` method to accept the prompt and proceed with the download:
+3. We use the `missing` method to check if the text is missing. If the text is missing, the first callback is executed to handle that case (e.g., by waiting or performing other actions). If the text is present, the second callback is executed to perform the desired action (e.g., clicking a link).
 
-   ```php
-   $browser->visit('/page/where/download/occurs')
-       ->click('.download-button') // Trigger the download
-       ->acceptDialog();
-   ```
-
-   This code assumes that the `.download-button` element triggers the download.
-
-3. **Verify the Download:**
-   After accepting the prompt, you can then verify that the file was downloaded to the specified directory using Laravel Dusk's file assertions:
-
-   ```php
-   $downloadedFilePath = '/path/to/download/directory/your-file.extension';
-   $browser->assertFileExists($downloadedFilePath);
-   ```
-
-   Replace `your-file.extension` with the actual filename and extension of the downloaded file.
-
-By following these steps, you can automate the handling of the "Blocked Dangerous" prompt and ensure that the file is downloaded correctly using Laravel Dusk.
+This approach ensures that your Dusk test can handle situations where the expected text is not present on the page without causing errors. You can customize the actions within the callbacks based on your specific testing needs.
