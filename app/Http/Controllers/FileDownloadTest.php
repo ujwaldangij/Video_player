@@ -1,26 +1,15 @@
-In Laravel Dusk, when you use `assertSeeText` to verify the presence of a specific text on the page and then attempt to click a link or perform an action based on that text, you should handle situations where the text is not present to prevent errors. You can use conditional logic to check if the text is visible before clicking the link. Here's an example:
+To use Laravel Dusk to locate the text "2023" on a page and then click a `span` tag associated with it, you can do the following:
 
 ```php
-$browser->visit('/some-page')
-    ->when(
-        $browser->assertSeeText('Text You Expect')->missing(),
-        function ($browser) {
-            // Handle the case when the text is not present
-            $browser->pause(1000); // Wait or perform other actions as needed
-        },
-        function ($browser) {
-            // Perform actions when the text is present, like clicking a link
-            $browser->clickLink('Your Link Text');
-        }
-    );
+$textToFind = '2023';
+
+// Locate the text "2023" and find the associated span tag
+$browser->script("document.querySelector('span:contains(\"$textToFind\")').click();");
 ```
 
-In this example:
+In this code:
 
-1. We start by visiting a page with `$browser->visit('/some-page')`.
+- Replace `'2023'` with the specific text you want to find.
+- The `script` method is used to execute JavaScript in the browser, which locates the `span` tag containing the specified text and clicks it.
 
-2. We use `assertSeeText` to check if "Text You Expect" is present on the page.
-
-3. We use the `missing` method to check if the text is missing. If the text is missing, the first callback is executed to handle that case (e.g., by waiting or performing other actions). If the text is present, the second callback is executed to perform the desired action (e.g., clicking a link).
-
-This approach ensures that your Dusk test can handle situations where the expected text is not present on the page without causing errors. You can customize the actions within the callbacks based on your specific testing needs.
+Please make sure the `span` tag you want to click has a relationship with the text you're searching for and that the `:contains` selector accurately matches the desired text. Adjust the code based on your HTML structure.
