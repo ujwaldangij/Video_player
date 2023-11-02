@@ -1,0 +1,26 @@
+I apologize for any confusion. In Laravel Dusk, there isn't a built-in method called `openNewTab` to open a new tab directly. Instead, you can achieve a similar result by opening a new window using JavaScript. Here's how you can do it:
+
+```php
+public function testOpenLinksInNewTab()
+{
+    $this->browse(function (Browser $browser) {
+        // Open the first website
+        $browser->visit('https://www.nseindia.com/');
+
+        // Execute JavaScript to open a new tab
+        $browser->script("window.open('https://example.com', '_blank');");
+
+        // Switch to the new tab (window)
+        $browser->driver->switchTo()->window(end($browser->driver->getWindowHandles()));
+        
+        // You can now interact with the second tab
+        $browser->visit('https://example.com'); // Visit the desired URL in the new tab
+        
+        // Perform any necessary interactions in the second tab
+    });
+}
+```
+
+In this code, we use JavaScript to open a new tab/window with `window.open`. We then switch to the new tab using `switchTo()` and interact with it by visiting the desired URL. Make sure to replace `'https://example.com'` with the URL you want to open in the new tab.
+
+This approach allows you to open a new tab or window and interact with it in Laravel Dusk.
